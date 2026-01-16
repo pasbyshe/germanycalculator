@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Быстро посчитайте штраф за просрочку ВНЖ в Германии. Онлайн калькулятор поможет оценить размер штрафа и уровень риска.">
+  <title>Штраф за просрочку ВНЖ в Германии — калькулятор</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 30px; background: #f5f5f5; }
+    h1 { color: #222; }
+    label { display: block; margin: 10px 0 5px; }
+    input[type="date"] { padding: 5px; width: 200px; }
+    input[type="checkbox"] { margin-right: 5px; }
+    button { margin-top: 15px; padding: 10px 20px; cursor: pointer; }
+    #result { margin-top: 20px; padding: 15px; background: #fff; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Калькулятор штрафа за просрочку ВНЖ в Германии</h1>
+  <p>Если вы просрочили срок действия вашего вида на жительство в Германии, вы можете получить административный штраф. Наш калькулятор позволяет быстро оценить примерную сумму и уровень риска.</p>
+  <p>Учтите: это информационный инструмент, фактическое решение принимает Ausländerbehörde.</p>
+
+  <label for="endDate">Дата окончания ВНЖ:</label>
+  <input type="date" id="endDate">
+
+  <label for="currentDate">Текущая дата:</label>
+  <input type="date" id="currentDate">
+
+  <label>
+    <input type="checkbox" id="firstTime"> Первый раз просрочки
+  </label>
+
+  <button onclick="calculateFine()">Рассчитать штраф</button>
+
+  <div id="result"></div>
+
+  <script>
+    function calculateFine() {
+      const endDateInput = document.getElementById('endDate').value;
+      const currentDateInput = document.getElementById('currentDate').value || new Date().toISOString().slice(0,10);
+      const firstTime = document.getElementById('firstTime').checked;
+
+      if (!endDateInput) {
+        alert('Пожалуйста, укажите дату окончания ВНЖ.');
+        return;
+      }
+
+      const endDate = new Date(endDateInput);
+      const currentDate = new Date(currentDateInput);
+      const diffTime = currentDate - endDate;
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays <= 0) {
+        document.getElementById('result').innerHTML = "Срок ВНЖ ещё не истёк. Штраф отсутствует.";
+        return;
+      }
+
+      let fine = 50 + diffDays * 10; // базовая формула
+      if (fine > 1000) fine = 1000; // максимум для калькулятора
+
+      let risk = '';
+      if (diffDays <= 30) risk = 'Низкий';
+      else if (diffDays <= 90) risk = 'Средний';
+      else risk = 'Высокий';
+
+      document.getElementById('result').innerHTML = `
+        <p>Примерный размер штрафа: <strong>${fine} €</strong></p>
+        <p>Уровень риска: <strong>${risk}</strong></p>
+        <p>${risk === 'Высокий' ? '⚠️ Рекомендуется обратиться к миграционному юристу.' : ''}</p>
+      `;
+    }
+  </script>
+</body>
+</html>
